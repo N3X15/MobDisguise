@@ -40,12 +40,10 @@ public class DisguiseCommandEvent extends Event implements Cancellable {
 		return this.args;
 	}
 	
-	@Override
 	public boolean isCancelled() {
 		return this.canceled;
 	}
 
-	@Override
 	public void setCancelled(boolean cancel) {
 		this.canceled = cancel;
 	}

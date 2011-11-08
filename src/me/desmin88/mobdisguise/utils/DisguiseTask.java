@@ -12,7 +12,6 @@ public class DisguiseTask implements Runnable {
         plugin = instance;
     }
 
-    @Override
     public void run() {
         for (String s : MobDisguise.disList) {
             if(Bukkit.getServer().getPlayer(s) == null) {

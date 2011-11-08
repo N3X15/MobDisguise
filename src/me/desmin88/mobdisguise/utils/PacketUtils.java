@@ -36,6 +36,17 @@ public class PacketUtils {
         }
     }
     
+    public void setPowered(DataWatcher dw, boolean powered) {
+        if (!powered)
+            dw.watch(17, Byte.valueOf((byte) 0));
+        else
+            dw.watch(17, Byte.valueOf((byte) 1));
+    }
+    
+    public void setDataValue(int id, int value) {
+    
+    }
+    
     public void undisguiseToAll(Player p1) {
         //Make packets out of loop!
         CraftPlayer p22 = (CraftPlayer) p1;

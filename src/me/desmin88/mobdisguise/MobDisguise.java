@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import me.desmin88.mobdisguise.commands.MDCommand;
+import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import me.desmin88.mobdisguise.listeners.MDEntityListener;
 import me.desmin88.mobdisguise.listeners.MDPlayerListener;
 import me.desmin88.mobdisguise.utils.DisguiseTask;
@@ -38,27 +39,26 @@ public class MobDisguise extends JavaPlugin {
     //public final PacketListener packetlistener = new PacketListener(this);
     public final MDPlayerListener playerlistener = new MDPlayerListener(this);
     public final MDEntityListener entitylistener = new MDEntityListener(this);
+    public static Map<String,DisguiseHandler> disguiseHandlers=new HashMap<String,DisguiseHandler>();
     public static final String pref = "[MobDisguise] ";
     public static Configuration cfg;
     public static boolean perm;
     public static PluginDescriptionFile pdf;
-    @Override
+    
     public void onDisable() {
         this.getServer().getScheduler().cancelTasks(this);
-        System.out.println("[" + pdf.getName()+ "]" + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " disabled.");
-    
+        System.out.println("[" + pdf.getName() + "]" + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " disabled.");
+        
     }
-
-    @Override
+    
     public void onEnable() {
-        pdf=this.getDescription();
+        pdf = this.getDescription();
         // Begin config code
         if (!new File(getDataFolder(), "config.yml").exists()) {
             try {
                 getDataFolder().mkdir();
-                new File(getDataFolder(),"config.yml").createNewFile();
-            } 
-            catch(Exception e) {
+                new File(getDataFolder(), "config.yml").createNewFile();
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println(pref + "Error making config.yml?!");
                 getServer().getPluginManager().disablePlugin(this); //Cleanup
@@ -67,33 +67,31 @@ public class MobDisguise extends JavaPlugin {
         }
         cfg = this.getConfiguration(); // Get config
         
-        
-       if (cfg.getKeys().isEmpty()) { // Config hasn't been made
+        if (cfg.getKeys().isEmpty()) { // Config hasn't been made
             System.out.println(pref + "config.yml not found, making with default values");
             cfg.setProperty("RealDrops.enabled", false);
             cfg.setProperty("Permissions.enabled", true);
             cfg.setProperty("MobTarget.enabled", true);
             cfg.setProperty("DisableItemPickup", true);
-            for (String mobtype : MobIdEnum.map.keySet()) {
+            for (MobIdEnum mobtype : MobIdEnum.values()) {
                 cfg.setHeader("#Setting a mobtype to false will not allow a player to disguise as that type");
-                cfg.setProperty("Blacklist." + mobtype, true); // Just making
+                cfg.setProperty("Blacklist." + mobtype.name().toLowerCase(), true); // Just making
             }
             cfg.save();
         }
-       if(cfg.getProperty("MobTarget.enabled") == null || cfg.getProperty("DisableItemPickup.enabled") == null) {
-           cfg.setProperty("MobTarget.enabled", true);
-           cfg.setProperty("DisableItemPickup.enabled", true);
-           cfg.save();
-       }
-       if(cfg.getProperty("Blacklist.enderman") == null) {
-           cfg.setProperty("Blacklist.enderman", true);
-           cfg.setProperty("Blacklist.silverfish", true);
-           cfg.setProperty("Blacklist.cavespider", true);
-       }
-       
-       
-       cfg.save();
-       perm = cfg.getBoolean("Permissions.enabled", true);
+        if (cfg.getProperty("MobTarget.enabled") == null || cfg.getProperty("DisableItemPickup.enabled") == null) {
+            cfg.setProperty("MobTarget.enabled", true);
+            cfg.setProperty("DisableItemPickup.enabled", true);
+            cfg.save();
+        }
+        if (cfg.getProperty("Blacklist.enderman") == null) {
+            cfg.setProperty("Blacklist.enderman", true);
+            cfg.setProperty("Blacklist.silverfish", true);
+            cfg.setProperty("Blacklist.cavespider", true);
+        }
+        
+        cfg.save();
+        perm = cfg.getBoolean("Permissions.enabled", true);
         
         PluginManager pm = getServer().getPluginManager();
         this.getCommand("md").setExecutor(new MDCommand(this));
@@ -111,8 +109,8 @@ public class MobDisguise extends JavaPlugin {
         // Register packet listeners
         //org.getspout.spoutapi.packet.listener.Listeners.addListener(17, packetlistener);
         //org.getspout.spoutapi.packet.listener.Listeners.addListener(18, packetlistener);
-        System.out.println("[" + pdf.getName() + "]"  + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " enabled.");
-
+        System.out.println("[" + pdf.getName() + "]" + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " enabled.");
+        
     }
-
+    
 }

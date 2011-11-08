@@ -84,7 +84,7 @@ public class MobDisguiseAPI {
 	 * @return true if successful
 	 */
 	public static boolean disguisePlayer(Player p, String mobtype) {
-		if (!MobIdEnum.map.containsKey(mobtype)) {
+		if (MobIdEnum.get(mobtype)==null) {
 			return false;
 		}
 		if (isDisguised(p)) {
@@ -99,7 +99,7 @@ public class MobDisguiseAPI {
 		/* Listener notify end */
 		MobDisguise.apiList.add(p.getName());
 		MobDisguise.disList.add(p.getName());
-		MobDisguise.playerMobId.put(p.getName(), (byte) MobIdEnum.map.get(mobtype).intValue());
+		MobDisguise.playerMobId.put(p.getName(), MobIdEnum.get(mobtype).id);
 		MobDisguise.playerEntIds.add(Integer.valueOf(p.getEntityId()));
 		MobDisguise.pu.disguiseToAll(p);
 		return true;

@@ -29,13 +29,11 @@ public class DisguiseEvent extends Event implements Cancellable {
 		return this.player;
 	}
 
-	@Override
 	public boolean isCancelled() {
 		// TODO Auto-generated method stub
 		return this.canceled;
 	}
 
-	@Override
 	public void setCancelled(boolean cancel) {
 		this.canceled = cancel;
 	}
