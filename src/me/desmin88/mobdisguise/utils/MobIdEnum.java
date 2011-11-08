@@ -9,7 +9,7 @@ import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import org.bukkit.entity.Player;
 
 public enum MobIdEnum {
-    STEVE(49),
+    //STEVE(49),
     CREEPER(50,CreeperHandler.class),
     SKELETON(51),
     SPIDER(52),
@@ -85,7 +85,7 @@ public enum MobIdEnum {
     }
     public static MobIdEnum get(String mobtype) {
         for(MobIdEnum s : values()) {
-            if(s.name() == mobtype) {
+            if(s.name().equalsIgnoreCase(mobtype)) {
                 return s;
             }
         }

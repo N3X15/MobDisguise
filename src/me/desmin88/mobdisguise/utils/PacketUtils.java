@@ -3,6 +3,7 @@ package me.desmin88.mobdisguise.utils;
 import java.lang.reflect.Field;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet20NamedEntitySpawn;
@@ -128,13 +129,11 @@ public class PacketUtils {
     
     
     public Packet24MobSpawn packetMaker(Player p1, Byte id) {
-        DataWatcher tmp = null;
-        if(MobDisguise.data.get(p1.getName()) == null) {
-            tmp = new DataWatcher();
-            MobDisguise.data.put(p1.getName(), tmp);
-        }
-        else {
-            tmp = MobDisguise.data.get(p1.getName());
+        DisguiseHandler dh = null;
+        if(MobDisguise.disguiseHandlers.containsKey(p1.getName())) {
+            dh = MobDisguise.disguiseHandlers.get(p1.getName());
+        } else {
+            return null;
         }
 
         Location loc = p1.getLocation();
@@ -150,7 +149,7 @@ public class PacketUtils {
         try {
             datawatcher = packet.getClass().getDeclaredField("h");
             datawatcher.setAccessible(true);
-            datawatcher.set(packet, tmp);
+            datawatcher.set(packet, dh.getDataWatcher());
             datawatcher.setAccessible(false);
         } catch (Exception e) {
             System.out.println(MobDisguise.pref + "Error making packet?!");
