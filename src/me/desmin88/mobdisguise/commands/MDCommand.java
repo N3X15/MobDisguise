@@ -3,6 +3,7 @@ package me.desmin88.mobdisguise.commands;
 import java.util.Arrays;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import me.desmin88.mobdisguise.api.event.DisguiseAsMobEvent;
 import me.desmin88.mobdisguise.api.event.DisguiseAsPlayerEvent;
 import me.desmin88.mobdisguise.api.event.DisguiseCommandEvent;
@@ -69,7 +70,6 @@ public class MDCommand implements CommandExecutor {
                 MobDisguise.pu.undisguiseToAll(s);
                 MobDisguise.disList.remove(s.getName());
                 MobDisguise.disguiseHandlers.put(s.getName(), null);
-                MobDisguise.playerMobId.put(s.getName(), null);
                 MobDisguise.playerEntIds.remove(Integer.valueOf(s.getEntityId()));
                 s.sendMessage(MobDisguise.pref + "You have been changed back to human form!");
                 return true;
@@ -114,7 +114,7 @@ public class MDCommand implements CommandExecutor {
                     return true;
                 } else {
                     
-                    Integer inte = (Integer) MobDisguise.playerMobId.get(s.getName()).intValue();
+                    Integer inte = MobDisguiseAPI.getPlayerDisguise(s).getMobID();
                     String mobtype = MobIdEnum.getTypeFromByte(inte);
                     s.sendMessage(MobDisguise.pref + "You are currently disguised as a " + mobtype);
                     return true;
@@ -181,7 +181,6 @@ public class MDCommand implements CommandExecutor {
                 }
                 /* Listener notify end */
                 MobDisguise.disList.add(s.getName());
-                MobDisguise.playerMobId.put(s.getName(), (byte) MobIdEnum.get(mobtype).id);
                 MobDisguise.playerEntIds.add(Integer.valueOf(s.getEntityId()));
                 MobDisguise.disguiseHandlers.put(s.getName(), MobIdEnum.get(mobtype).instantiate(s, plugin));
                 MobDisguise.pu.disguiseToAll(s);

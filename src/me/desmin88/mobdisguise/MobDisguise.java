@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import me.desmin88.mobdisguise.commands.MDCommand;
 import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import me.desmin88.mobdisguise.listeners.MDEntityListener;
@@ -13,7 +14,6 @@ import me.desmin88.mobdisguise.listeners.MDPlayerListener;
 import me.desmin88.mobdisguise.utils.DisguiseTask;
 import me.desmin88.mobdisguise.utils.MobIdEnum;
 import me.desmin88.mobdisguise.utils.PacketUtils;
-import net.minecraft.server.DataWatcher;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -22,12 +22,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+@SuppressWarnings("deprecation")
 public class MobDisguise extends JavaPlugin {
     public static Set<String> disList = new HashSet<String>();
     public static Set<String> apiList = new HashSet<String>();
-    public static Map<String, Byte> playerMobId = new HashMap<String, Byte>();
-    //Player -> Datawatcher
-    public static Map<String, DataWatcher> data = new HashMap<String, DataWatcher>();
     
     //Player disguising -> player disguised as
     public static Map<String, String> p2p = new HashMap<String, String>();
@@ -52,6 +50,7 @@ public class MobDisguise extends JavaPlugin {
     }
     
     public void onEnable() {
+        MobDisguiseAPI.plugin=this;
         pdf = this.getDescription();
         // Begin config code
         if (!new File(getDataFolder(), "config.yml").exists()) {

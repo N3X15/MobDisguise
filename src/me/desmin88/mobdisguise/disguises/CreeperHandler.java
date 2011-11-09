@@ -8,12 +8,13 @@ import org.bukkit.entity.Player;
 
 import me.desmin88.mobdisguise.MobDisguise;
 import me.desmin88.mobdisguise.disguises.DisguiseHandler;
+import me.desmin88.mobdisguise.utils.MobIdEnum;
 
 public class CreeperHandler extends DisguiseHandler {
     Timer explodeTimer = new Timer();
     
     public CreeperHandler(Player pl, MobDisguise p) {
-        super(pl, p);
+        super(pl, p, MobIdEnum.CREEPER.id);
         this.datawatcher.a(16, Byte.valueOf((byte) -1));
         this.datawatcher.a(17, Byte.valueOf((byte) 0));
         Logger.getLogger("Minecraft").info(pl.getName()+" has been disguised as a creeper.");

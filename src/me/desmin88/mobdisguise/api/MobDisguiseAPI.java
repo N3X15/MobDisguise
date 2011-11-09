@@ -4,8 +4,8 @@ import me.desmin88.mobdisguise.MobDisguise;
 import me.desmin88.mobdisguise.api.event.DisguiseAsMobEvent;
 import me.desmin88.mobdisguise.api.event.DisguiseAsPlayerEvent;
 import me.desmin88.mobdisguise.api.event.UnDisguiseEvent;
+import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import me.desmin88.mobdisguise.utils.MobIdEnum;
-import net.minecraft.server.DataWatcher;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
  *
  */
 public class MobDisguiseAPI {
+    public static MobDisguise plugin;
 	/**
 	 * Disguises a player as a player.
 	 * 
@@ -99,8 +100,8 @@ public class MobDisguiseAPI {
 		/* Listener notify end */
 		MobDisguise.apiList.add(p.getName());
 		MobDisguise.disList.add(p.getName());
-		MobDisguise.playerMobId.put(p.getName(), MobIdEnum.get(mobtype).id);
 		MobDisguise.playerEntIds.add(Integer.valueOf(p.getEntityId()));
+		MobDisguise.disguiseHandlers.put(p.getName(), MobIdEnum.get(mobtype).instantiate(p, plugin));
 		MobDisguise.pu.disguiseToAll(p);
 		return true;
 	}
@@ -126,7 +127,7 @@ public class MobDisguiseAPI {
 		MobDisguise.pu.undisguiseToAll(p);
 		MobDisguise.disList.remove(p.getName());
 		MobDisguise.apiList.remove(p.getName());
-		MobDisguise.playerMobId.put(p.getName(), null);
+        MobDisguise.disguiseHandlers.remove(p.getName());
 		MobDisguise.playerEntIds.remove(Integer.valueOf(p.getEntityId()));
 		return true;
 
@@ -142,21 +143,12 @@ public class MobDisguiseAPI {
 	public static boolean isDisguised(Player p) {
 		return MobDisguise.disList.contains(p.getName());
 	}
-	
-	 /**
-     * Gets a Player's DataWatcher
-     * 
-     * @param p Player
-     * 
-     * @return Datawatcher 
-     */
-    public static DataWatcher getPlayerDataWatcher(Player p) {
-        if(MobDisguise.data.get(p.getName()) == null) {
-            return null;
+
+    public static DisguiseHandler getPlayerDisguise(Player player) {
+        if(MobDisguise.disguiseHandlers.containsKey(player.getName())) {
+            return MobDisguise.disguiseHandlers.get(player.getName());
         }
-        else {
-            return MobDisguise.data.get(p.getName());
-        }
+        return null;
     }
 
 }

@@ -3,8 +3,8 @@ package me.desmin88.mobdisguise.utils;
 import java.lang.reflect.Field;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import me.desmin88.mobdisguise.disguises.DisguiseHandler;
-import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet24MobSpawn;
@@ -37,17 +37,6 @@ public class PacketUtils {
         }
     }
     
-    public void setPowered(DataWatcher dw, boolean powered) {
-        if (!powered)
-            dw.watch(17, Byte.valueOf((byte) 0));
-        else
-            dw.watch(17, Byte.valueOf((byte) 1));
-    }
-    
-    public void setDataValue(int id, int value) {
-    
-    }
-    
     public void undisguiseToAll(Player p1) {
         //Make packets out of loop!
         CraftPlayer p22 = (CraftPlayer) p1;
@@ -68,7 +57,8 @@ public class PacketUtils {
     
     public void disguiseToAll(Player p1) {
         //Make packets out of loop!
-        Packet24MobSpawn p24 = packetMaker(p1, MobDisguise.playerMobId.get(p1.getName()));
+        DisguiseHandler dh = MobDisguiseAPI.getPlayerDisguise(p1);
+        Packet24MobSpawn p24 = dh.createSpawnMobPacket();
         for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
             if(!p1.getWorld().equals(p2.getWorld())) {
                 continue;
