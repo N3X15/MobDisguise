@@ -21,12 +21,18 @@ public enum MobIdEnum {
     ENDERMAN(58),
     CAVESPIDER(59),
     SILVERFISH(60),
+    BLAZE(61),
+    LAVA_SLIME(62),
+    ENDER_DRAGON(63),
     PIG(90),
     SHEEP(91),
     COW(92),
     CHICKEN(93),
     SQUID(94),
     WOLF(95),
+    MUSHROOM_COW(96),
+    SNOWMAN(97),
+    VILLAGER(120)
     ;
     
     public byte id;

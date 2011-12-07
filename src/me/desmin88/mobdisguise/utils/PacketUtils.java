@@ -58,6 +58,7 @@ public class PacketUtils {
     public void disguiseToAll(Player p1) {
         //Make packets out of loop!
         DisguiseHandler dh = MobDisguiseAPI.getPlayerDisguise(p1);
+        if(dh == null) return;
         Packet24MobSpawn p24 = dh.createSpawnMobPacket();
         for (Player p2 : Bukkit.getServer().getOnlinePlayers()) {
             if(!p1.getWorld().equals(p2.getWorld())) {
