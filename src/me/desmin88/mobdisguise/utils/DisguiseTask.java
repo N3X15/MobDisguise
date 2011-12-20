@@ -1,30 +1,26 @@
 package me.desmin88.mobdisguise.utils;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class DisguiseTask implements Runnable {
     public MobDisguise plugin;
-
-    public DisguiseTask(MobDisguise instance) {
+    
+    public DisguiseTask(final MobDisguise instance) {
         plugin = instance;
     }
-
+    
     public void run() {
-        for (String s : MobDisguise.disList) {
-            if(Bukkit.getServer().getPlayer(s) == null) {
+        for (final String playerName : MobDisguise.players.keySet()) {
+            final Player p = Bukkit.getServer().getPlayer(playerName);
+            if (p == null) {
                 continue;
             }
-            Player temp = plugin.getServer().getPlayer(s);
+            MobDisguiseAPI.getPlayerDisguise(p).refresh();
             
-            if(MobDisguise.playerdislist.contains(temp.getName())) {
-                MobDisguise.pu.disguisep2pToAll(temp, MobDisguise.p2p.get(temp.getName()));
-            }
-            else {
-                MobDisguise.pu.disguiseToAll(temp);
-            }
         }
     }
 }

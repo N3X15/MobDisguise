@@ -15,60 +15,54 @@ import org.bukkit.event.Listener;
  * @author iffa
  * 
  */
-public class MobDisguiseListener extends CustomEventListener implements
-		Listener {
-	/**
-	 * Called when a player disguises as a mob.
-	 * 
-	 * @param event
-	 *            Event data
-	 */
-	public void onDisguiseAsMob(DisguiseAsMobEvent event) {
-	}
-
-	/**
-	 * Called when a player disguises as another player.
-	 * 
-	 * @param event
-	 *            Event data
-	 */
-	public void onDisguiseAsPlayer(DisguiseAsPlayerEvent event) {
-	}
-
-	/**
-	 * Called when a player undisguises.
-	 * 
-	 * @param event
-	 *            Event data
-	 */
-	public void onUnDisguise(UnDisguiseEvent event) {
-	}
-
-	/**
-	 * Called when the MobDisguise command is used.
-	 * 
-	 * @param event
-	 *            Event data
-	 */
-	public void onMobDisguiseCommand(DisguiseCommandEvent event) {
-	}
-
-	/**
-	 * Handles the events.
-	 * 
-	 * @param event
-	 *            Event data
-	 */
-	@Override
-	public void onCustomEvent(Event event) {
-		if (event instanceof DisguiseAsMobEvent) {
-			onDisguiseAsMob((DisguiseAsMobEvent) event);
-		} else if (event instanceof DisguiseAsPlayerEvent) {
-			onDisguiseAsPlayer((DisguiseAsPlayerEvent) event);
-		} else if (event instanceof UnDisguiseEvent) {
-			onUnDisguise((UnDisguiseEvent) event);
-		} else if (event instanceof DisguiseCommandEvent) {
-			onMobDisguiseCommand((DisguiseCommandEvent) event);
-		}
-	}
+public class MobDisguiseListener extends CustomEventListener implements Listener {
+    /**
+     * Called when a player disguises as a mob.
+     * 
+     * @param event Event data
+     */
+    public void onDisguiseAsMob(final DisguiseAsMobEvent event) {
+    }
+    
+    /**
+     * Called when a player disguises as another player.
+     * 
+     * @param event Event data
+     */
+    public void onDisguiseAsPlayer(final DisguiseAsPlayerEvent event) {
+    }
+    
+    /**
+     * Called when a player undisguises.
+     * 
+     * @param event Event data
+     */
+    public void onUnDisguise(final UnDisguiseEvent event) {
+    }
+    
+    /**
+     * Called when the MobDisguise command is used.
+     * 
+     * @param event Event data
+     */
+    public void onMobDisguiseCommand(final DisguiseCommandEvent event) {
+    }
+    
+    /**
+     * Handles the events.
+     * 
+     * @param event Event data
+     */
+    @Override
+    public void onCustomEvent(final Event event) {
+        if (event instanceof DisguiseAsMobEvent) {
+            onDisguiseAsMob((DisguiseAsMobEvent) event);
+        } else if (event instanceof DisguiseAsPlayerEvent) {
+            onDisguiseAsPlayer((DisguiseAsPlayerEvent) event);
+        } else if (event instanceof UnDisguiseEvent) {
+            onUnDisguise((UnDisguiseEvent) event);
+        } else if (event instanceof DisguiseCommandEvent) {
+            onMobDisguiseCommand((DisguiseCommandEvent) event);
+        }
+    }
 }

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import me.desmin88.mobdisguise.commands.MDCommand;
@@ -24,47 +23,40 @@ import org.bukkit.util.config.Configuration;
 
 @SuppressWarnings("deprecation")
 public class MobDisguise extends JavaPlugin {
-    public static Set<String> disList = new HashSet<String>();
-    public static Set<String> apiList = new HashSet<String>();
     
     //Player disguising -> player disguised as
-    public static Map<String, String> p2p = new HashMap<String, String>();
-    public static Set<String> playerdislist = new HashSet<String>();
-    //end
-    public static Set<Integer> playerEntIds = new HashSet<Integer>();
     public static PacketUtils pu = new PacketUtils();
-    public static Set<String> telelist = new HashSet<String>();
-    //public final PacketListener packetlistener = new PacketListener(this);
     public final MDPlayerListener playerlistener = new MDPlayerListener(this);
     public final MDEntityListener entitylistener = new MDEntityListener(this);
-    public static Map<String,DisguiseHandler> disguiseHandlers=new HashMap<String,DisguiseHandler>();
+    public static Map<String, DisguiseHandler> players = new HashMap<String, DisguiseHandler>();
     public static final String pref = "[MobDisguise] ";
     public static Configuration cfg;
     public static boolean perm;
     public static PluginDescriptionFile pdf;
+    public static HashSet<String> telelist = new HashSet<String>();
     
     public void onDisable() {
-        this.getServer().getScheduler().cancelTasks(this);
+        getServer().getScheduler().cancelTasks(this);
         System.out.println("[" + pdf.getName() + "]" + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " disabled.");
         
     }
     
     public void onEnable() {
-        MobDisguiseAPI.plugin=this;
-        pdf = this.getDescription();
+        MobDisguiseAPI.plugin = this;
+        pdf = getDescription();
         // Begin config code
         if (!new File(getDataFolder(), "config.yml").exists()) {
             try {
                 getDataFolder().mkdir();
                 new File(getDataFolder(), "config.yml").createNewFile();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 System.out.println(pref + "Error making config.yml?!");
                 getServer().getPluginManager().disablePlugin(this); //Cleanup
                 return;
             }
         }
-        cfg = this.getConfiguration(); // Get config
+        cfg = getConfiguration(); // Get config
         
         if (cfg.getKeys().isEmpty()) { // Config hasn't been made
             System.out.println(pref + "config.yml not found, making with default values");
@@ -72,13 +64,13 @@ public class MobDisguise extends JavaPlugin {
             cfg.setProperty("Permissions.enabled", true);
             cfg.setProperty("MobTarget.enabled", true);
             cfg.setProperty("DisableItemPickup", true);
-            for (MobIdEnum mobtype : MobIdEnum.values()) {
+            for (final MobIdEnum mobtype : MobIdEnum.values()) {
                 cfg.setHeader("#Setting a mobtype to false will not allow a player to disguise as that type");
                 cfg.setProperty("Blacklist." + mobtype.name().toLowerCase(), true); // Just making
             }
             cfg.save();
         }
-        if (cfg.getProperty("MobTarget.enabled") == null || cfg.getProperty("DisableItemPickup.enabled") == null) {
+        if ((cfg.getProperty("MobTarget.enabled") == null) || (cfg.getProperty("DisableItemPickup.enabled") == null)) {
             cfg.setProperty("MobTarget.enabled", true);
             cfg.setProperty("DisableItemPickup.enabled", true);
             cfg.save();
@@ -92,8 +84,8 @@ public class MobDisguise extends JavaPlugin {
         cfg.save();
         perm = cfg.getBoolean("Permissions.enabled", true);
         
-        PluginManager pm = getServer().getPluginManager();
-        this.getCommand("md").setExecutor(new MDCommand(this));
+        final PluginManager pm = getServer().getPluginManager();
+        getCommand("md").setExecutor(new MDCommand(this));
         pm.registerEvent(Event.Type.PLAYER_JOIN, playerlistener, Priority.Lowest, this);
         pm.registerEvent(Event.Type.PLAYER_QUIT, playerlistener, Priority.Normal, this);
         pm.registerEvent(Event.Type.PLAYER_RESPAWN, playerlistener, Priority.Normal, this);
@@ -103,11 +95,7 @@ public class MobDisguise extends JavaPlugin {
         pm.registerEvent(Event.Type.ENTITY_TARGET, entitylistener, Priority.Normal, this);
         pm.registerEvent(Event.Type.PLAYER_ANIMATION, playerlistener, Priority.Normal, this);
         
-        // new MDPlayerListener(this), Priority.Normal, this);
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new DisguiseTask(this), 1200, 1200);
-        // Register packet listeners
-        //org.getspout.spoutapi.packet.listener.Listeners.addListener(17, packetlistener);
-        //org.getspout.spoutapi.packet.listener.Listeners.addListener(18, packetlistener);
         System.out.println("[" + pdf.getName() + "]" + " by " + pdf.getAuthors().get(0) + " version " + pdf.getVersion() + " enabled.");
         
     }

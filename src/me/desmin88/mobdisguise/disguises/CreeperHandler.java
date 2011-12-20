@@ -4,35 +4,35 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 
-import org.bukkit.entity.Player;
-
 import me.desmin88.mobdisguise.MobDisguise;
-import me.desmin88.mobdisguise.disguises.DisguiseHandler;
 import me.desmin88.mobdisguise.utils.MobIdEnum;
+
+import org.bukkit.entity.Player;
 
 public class CreeperHandler extends DisguiseHandler {
     Timer explodeTimer = new Timer();
     
-    public CreeperHandler(Player pl, MobDisguise p) {
+    public CreeperHandler(final Player pl, final MobDisguise p) {
         super(pl, p, MobIdEnum.CREEPER.id);
-        this.datawatcher.a(16, Byte.valueOf((byte) -1));
-        this.datawatcher.a(17, Byte.valueOf((byte) 0));
-        Logger.getLogger("Minecraft").info(pl.getName()+" has been disguised as a creeper.");
+        datawatcher.a(16, Byte.valueOf((byte) -1));
+        datawatcher.a(17, Byte.valueOf((byte) 0));
+        Logger.getLogger("Minecraft").info(pl.getName() + " has been disguised as a creeper.");
     }
     
     class ExplodeTask extends TimerTask {
+        @Override
         public void run() {
             try {
                 setExploding(false);
                 explode();
-            } catch(Exception e) {
+            } catch (final Exception e) {
                 return;
             }
         }
     }
     
     @Override
-    public boolean handleEffectCommand(String cmd, String[] arg) {
+    public boolean handleEffectCommand(final String cmd, final String[] arg) {
         if (cmd.equalsIgnoreCase("explode")) {
             if (datawatcher == null) {
                 player.sendMessage("Sorry, it appears that the datawatcher we need is null.");
@@ -66,21 +66,21 @@ public class CreeperHandler extends DisguiseHandler {
     }
     
     public void explode() {
-        player.getWorld().createExplosion(player.getLocation(), getPowered() ? 6f : 3f);
+        player.getWorld().createExplosion(player.getLocation(), isPowered() ? 6f : 3f);
         player.teleport(player.getWorld().getSpawnLocation());
     }
     
-    private boolean getPowered() {
-        return datawatcher.getByte(16) == 1;
+    public boolean isPowered() {
+        return datawatcher.getByte(17) == 1;
     }
     
-    private void setPowered(boolean b) {
-        datawatcher.watch(16, Byte.valueOf(b ? (byte)1 : (byte)0));
+    private void setPowered(final boolean b) {
+        datawatcher.watch(17, Byte.valueOf(b ? (byte) 1 : (byte) 0));
         sendUpdate();
     }
     
-    private void setExploding(boolean b) {
-        datawatcher.watch(17, Byte.valueOf((b) ? (byte)1 : (byte)-1));
+    private void setExploding(final boolean b) {
+        datawatcher.watch(16, Byte.valueOf((b) ? (byte) 1 : (byte) -1));
         sendUpdate();
     }
 }

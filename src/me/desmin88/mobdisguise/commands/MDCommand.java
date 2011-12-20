@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import me.desmin88.mobdisguise.MobDisguise;
 import me.desmin88.mobdisguise.api.MobDisguiseAPI;
-import me.desmin88.mobdisguise.api.event.DisguiseAsMobEvent;
-import me.desmin88.mobdisguise.api.event.DisguiseAsPlayerEvent;
 import me.desmin88.mobdisguise.api.event.DisguiseCommandEvent;
 import me.desmin88.mobdisguise.api.event.UnDisguiseEvent;
 import me.desmin88.mobdisguise.disguises.DisguiseHandler;
@@ -23,60 +21,41 @@ import org.bukkit.entity.Player;
  * 
  */
 public class MDCommand implements CommandExecutor {
-    private final MobDisguise plugin;
-    
-    public MDCommand(MobDisguise instance) {
-        this.plugin = instance;
+    public MDCommand(final MobDisguise instance) {
     }
     
-    public boolean onCommand(CommandSender sender, Command command,
-            String commandLabel, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command, final String commandLabel, final String[] args) {
         /* Listener notify start */
-        DisguiseCommandEvent ev = new DisguiseCommandEvent("DisguiseCommandEvent", sender, args);
+        final DisguiseCommandEvent ev = new DisguiseCommandEvent("DisguiseCommandEvent", sender, args);
         Bukkit.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
+        if (ev.isCancelled())
             return true;
-        }
         /* Listener notify end */
         if (sender instanceof Player) {
-            Player s = (Player) sender;
+            final Player s = (Player) sender;
             if (args.length == 0) { // Undisguising, player types /md
-                if (!MobDisguise.disList.contains(s.getName())) {
+                if (!MobDisguise.players.containsKey(s.getName())) {
                     s.sendMessage(MobDisguise.pref + "You are not disguised, so you can't undisguise!");
                     return true;
-                }
-                if (MobDisguise.playerdislist.contains(s.getName())) {
+                } else {
                     /* Listener notify start */
-                    UnDisguiseEvent e = new UnDisguiseEvent("UnDisguiseEvent", s, false);
+                    final UnDisguiseEvent e = new UnDisguiseEvent("UnDisguiseEvent", s, false);
                     Bukkit.getServer().getPluginManager().callEvent(e);
-                    if (e.isCancelled()) {
-                        return false;
-                    }
+                    if (e.isCancelled())
+                        return true;
                     /* Listener notify end */
-                    MobDisguise.disList.remove(s.getName());
-                    MobDisguise.playerdislist.remove(s.getName());
-                    MobDisguise.pu.undisguisep2pToAll(s);
-                    MobDisguise.p2p.put(s.getName(), null);
+                    MobDisguiseAPI.undisguisePlayer(s);
                     s.sendMessage(MobDisguise.pref + "You have undisguised as a different player and returned back to normal!");
                     return true;
                 }
-                /* Listener notify start */
-                UnDisguiseEvent e = new UnDisguiseEvent("UnDisguiseEvent", s, true);
-                Bukkit.getServer().getPluginManager().callEvent(e);
-                if (e.isCancelled()) {
-                    return false;
-                }
-                /* Listener notify end */
-                MobDisguise.pu.undisguiseToAll(s);
-                MobDisguise.disList.remove(s.getName());
-                MobDisguise.disguiseHandlers.put(s.getName(), null);
-                MobDisguise.playerEntIds.remove(Integer.valueOf(s.getEntityId()));
-                s.sendMessage(MobDisguise.pref + "You have been changed back to human form!");
-                return true;
             }
             
             if (args[0].equalsIgnoreCase("e")) {
-                DisguiseHandler dh = ((DisguiseHandler) MobDisguise.disguiseHandlers.get(s.getName()));
+                if (!MobDisguiseAPI.isDisguised(s)) {
+                    s.sendMessage(MobDisguise.pref + "You aren't disguised.");
+                    return true;
+                }
+                final DisguiseHandler dh = MobDisguise.players.get(s.getName());
                 
                 String[] arg = new String[0];
                 if (args.length > 2) {
@@ -88,17 +67,12 @@ public class MDCommand implements CommandExecutor {
             }
             
             if (args[0].equalsIgnoreCase("types")) { // They want to know valid types of mobs
-                if (s.isOp() || s.hasPermission("mobdisguise.*")) {
-                    s.sendMessage(MobDisguise.pref + MobIdEnum.types);
-                    return true;
-                }
                 String available = new String("");
                 
-                for (MobIdEnum mob : MobIdEnum.values()) {
+                for (final MobIdEnum mob : MobIdEnum.values()) {
                     
-                    if (s.hasPermission("mobdisguise." + mob.name().toLowerCase())) {
+                    if (s.hasPermission("mobdisguise." + mob.name().toLowerCase()) || s.isOp()) {
                         available = available + mob.name().toLowerCase() + ", ";
-                        
                     }
                 }
                 s.sendMessage(MobDisguise.pref + available);
@@ -106,23 +80,18 @@ public class MDCommand implements CommandExecutor {
             }
             if (args[0].equalsIgnoreCase("stats")) { // They want to know they're current disguing status
             
-                if (!MobDisguise.disList.contains(s.getName())) {
+                if (!MobDisguiseAPI.isDisguised(s)) {
                     s.sendMessage(MobDisguise.pref + "You are currently NOT disguised!");
                     return true;
-                } else if (MobDisguise.playerdislist.contains(s.getName())) {
-                    s.sendMessage(MobDisguise.pref + "You are currently disguised as player " + MobDisguise.p2p.get(s.getName()));
-                    return true;
                 } else {
-                    
-                    Integer inte = MobDisguiseAPI.getPlayerDisguise(s).getMobID();
-                    String mobtype = MobIdEnum.getTypeFromByte(inte);
-                    s.sendMessage(MobDisguise.pref + "You are currently disguised as a " + mobtype);
+                    final DisguiseHandler dh = MobDisguiseAPI.getPlayerDisguise(s);
+                    s.sendMessage(MobDisguise.pref + "You are currently disguised as " + dh.toString());
                     return true;
                 }
                 
             }
             
-            if (args[0].equalsIgnoreCase("p") && args.length == 2) {
+            if (args[0].equalsIgnoreCase("p") && (args.length == 2)) {
                 if (MobDisguise.perm && !s.isOp()) {
                     if (!s.hasPermission("mobdisguise.player")) {
                         s.sendMessage(MobDisguise.pref + "You don't have permission to change into other players!");
@@ -137,24 +106,13 @@ public class MDCommand implements CommandExecutor {
                     s.sendMessage(MobDisguise.pref + "That username is too long!");
                     return true;
                 }
-                /* Listener notify start */
-                DisguiseAsPlayerEvent e = new DisguiseAsPlayerEvent("DisguiseAsPlayerEvent", s, args[1]);
-                Bukkit.getServer().getPluginManager().callEvent(e);
-                if (e.isCancelled()) {
-                    return true;
-                }
-                /* Listener notify end */
-                MobDisguise.disList.add(s.getName());
-                MobDisguise.playerdislist.add(s.getName());
-                MobDisguise.pu.disguisep2pToAll(s, args[1]);
-                MobDisguise.p2p.put(s.getName(), args[1]);
-                MobDisguise.disguiseHandlers.put(s.getName(), null);
+                MobDisguiseAPI.disguisePlayerAsPlayer(s, args[1]);
                 s.sendMessage(MobDisguise.pref + "You have disguised as player " + args[1]);
                 return true;
             }
             
             if (args.length == 1) { // Means they're trying to disguise
-                String mobtype = args[0].toLowerCase();
+                final String mobtype = args[0].toLowerCase();
                 if (MobIdEnum.get(mobtype) == null) {
                     s.sendMessage(MobDisguise.pref + "Invalid mob type!");
                     return true;
@@ -173,17 +131,7 @@ public class MDCommand implements CommandExecutor {
                     s.sendMessage(MobDisguise.pref + "This mob type has been restricted!");
                     return true;
                 }
-                /* Listener notify start */
-                DisguiseAsMobEvent e = new DisguiseAsMobEvent("DisguiseAsMobEvent", s, mobtype);
-                Bukkit.getServer().getPluginManager().callEvent(e);
-                if (e.isCancelled()) {
-                    return true;
-                }
-                /* Listener notify end */
-                MobDisguise.disList.add(s.getName());
-                MobDisguise.playerEntIds.add(Integer.valueOf(s.getEntityId()));
-                MobDisguise.disguiseHandlers.put(s.getName(), MobIdEnum.get(mobtype).instantiate(s, plugin));
-                MobDisguise.pu.disguiseToAll(s);
+                MobDisguiseAPI.disguisePlayer(s, mobtype);
                 s.sendMessage(MobDisguise.pref + "You have been disguised as a " + args[0].toLowerCase() + "!");
                 return true;
                 

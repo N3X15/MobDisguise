@@ -12,22 +12,82 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class DisguiseHandler {
+    public int entID = 0;
     protected MobDisguise plugin;
     protected Player player;
     protected DataWatcher datawatcher;
-    private byte mobId;
+    private final byte mobId;
     
-    public DisguiseHandler(Player pl, MobDisguise p, byte mobID) {
+    public DisguiseHandler(final Player pl, final MobDisguise p, final byte mobID) {
         plugin = p;
         player = pl;
         datawatcher = new DataWatcher();
-        this.datawatcher.a(0, Byte.valueOf((byte) 0));
-        mobId=mobID;
+        mobId = mobID;
+        refresh();
     }
     
-    public boolean handleEffectCommand(String cmd, String[] arg) {
+    public int getAge() {
+        return datawatcher.getInt(12);
+    }
+    
+    public void setAge(final int i) {
+        datawatcher.watch(12, Integer.valueOf(i));
+    }
+    
+    public boolean onFire() {
+        return getFlag(0);
+    }
+    
+    public void setFire(final boolean burnan) {
+        setFlag(0, burnan);
+    }
+    
+    public boolean isSneaking() {
+        return getFlag(1);
+    }
+    
+    public void setSneak(final boolean flag) {
+        setFlag(1, flag);
+    }
+    
+    public boolean isSprinting() {
+        return getFlag(3);
+    }
+    
+    public void setSprinting(final boolean flag) {
+        setFlag(3, flag);
+    }
+    
+    public void setHungry(final boolean flag) {
+        setFlag(4, flag);
+    }
+    
+    protected boolean getFlag(final int bit) {
+        return (datawatcher.getByte(0) & (1 << bit)) != 0;
+    }
+    
+    protected void setFlag(final int bit, final boolean status) {
+        final byte b0 = datawatcher.getByte(0);
+        
+        if (status) {
+            datawatcher.watch(0, Byte.valueOf((byte) (b0 | (1 << bit))));
+        } else {
+            datawatcher.watch(0, Byte.valueOf((byte) (b0 & ~(1 << bit))));
+        }
+    }
+    
+    public int getAirTicks() {
+        return datawatcher.b(1);
+    }
+    
+    public void setAirTicks(final int i) {
+        datawatcher.watch(1, Short.valueOf((short) i));
+    }
+    
+    public boolean handleEffectCommand(final String cmd, final String[] arg) {
         player.sendMessage(MobDisguise.pref + "Sorry, no effects available for this mob.");
         return false;
     }
@@ -39,40 +99,60 @@ public class DisguiseHandler {
     
     public void sendUpdate() {
         // Send DataWatcher updates
-        DataWatcher dw = getDataWatcher();
+        final DataWatcher dw = getDataWatcher();
         if (dw.a()) {
-            Packet40EntityMetadata p40 = new Packet40EntityMetadata(player.getEntityId(), dw);
-            for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            final Packet40EntityMetadata p40 = new Packet40EntityMetadata(player.getEntityId(), dw);
+            for (final Player player : Bukkit.getServer().getOnlinePlayers()) {
                 ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(p40);
             }
         }
     }
-
+    
     public Packet24MobSpawn createSpawnMobPacket() {
-        Location loc = player.getLocation();
-        Packet24MobSpawn packet = new Packet24MobSpawn();
+        final Location loc = player.getLocation();
+        final Packet24MobSpawn packet = new Packet24MobSpawn();
         packet.a = ((CraftPlayer) player).getEntityId();
         packet.b = mobId;
         packet.c = MathHelper.floor(loc.getX() * 32.0D);
         packet.d = MathHelper.floor(loc.getY() * 32.0D);
         packet.e = MathHelper.floor(loc.getZ() * 32.0D);
-        packet.f = (byte) ((int) loc.getYaw() * 256.0F / 360.0F);
-        packet.g = (byte) ((int) (loc.getPitch() * 256.0F / 360.0F));
+        packet.f = (byte) (((int) loc.getYaw() * 256.0F) / 360.0F);
+        packet.g = (byte) ((int) ((loc.getPitch() * 256.0F) / 360.0F));
         Field datawatcher;
         try {
             datawatcher = packet.getClass().getDeclaredField("h");
             datawatcher.setAccessible(true);
             datawatcher.set(packet, getDataWatcher());
             datawatcher.setAccessible(false);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(MobDisguise.pref + "Error making packet?!");
             return null;
-        } 
+        }
         return packet;
     }
-
+    
     public Integer getMobID() {
         // TODO Auto-generated method stub
         return Integer.valueOf(mobId);
+    }
+    
+    public void removeDisguise() {
+        MobDisguise.pu.undisguiseToAll(player);
+    }
+    
+    public Player getPlayer() {
+        return player;
+    }
+    
+    public ItemStack getDrops() {
+        // TODO Auto-generated method stub
+        return new ItemStack(0);
+    }
+    
+    public void refresh() {
+        // TODO Auto-generated method stub
+        datawatcher.a(0, Byte.valueOf((byte) 0));
+        datawatcher.a(1, Short.valueOf((short) 300));
+        datawatcher.a(12, new Integer(0));
     }
 }

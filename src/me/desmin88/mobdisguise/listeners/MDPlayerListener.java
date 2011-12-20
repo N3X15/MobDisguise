@@ -1,7 +1,9 @@
 package me.desmin88.mobdisguise.listeners;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import me.desmin88.mobdisguise.utils.DisguiseTask;
+import me.desmin88.mobdisguise.utils.MobIdEnum;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerAnimationEvent;
@@ -16,25 +18,28 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 public class MDPlayerListener extends PlayerListener {
     
     private final MobDisguise plugin;
-
-    public MDPlayerListener(MobDisguise instance) {
-        this.plugin = instance;
+    
+    public MDPlayerListener(final MobDisguise instance) {
+        plugin = instance;
     }
-
-    public void onPlayerPickupItem(PlayerPickupItemEvent event){
-        if(MobDisguise.disList.contains(event.getPlayer().getName()) && MobDisguise.cfg.getBoolean("DisableItemPickup.enabled", true) && !MobDisguise.playerdislist.contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
+    
+    @Override
+    public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
+        if (MobDisguiseAPI.isDisguised(event.getPlayer()) && MobDisguise.cfg.getBoolean("DisableItemPickup.enabled", true)) {
+            if (MobDisguiseAPI.getPlayerDisguise(event.getPlayer()).getMobID() != MobIdEnum.PLAYER.id) {
+                event.setCancelled(true);
+            }
         }
     }
     
-    
+    @Override
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        if(MobDisguise.disList.contains(event.getPlayer().getName())) {
-            MobDisguise.playerEntIds.remove(event.getPlayer().getEntityId());
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
+            MobDisguiseAPI.getPlayerDisguise(event.getPlayer()).entID = -1;
             //Should fix the "carcass" mob when disguised
-           Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-               public void run() {
-                   MobDisguise.pu.killCarcass(event.getPlayer());
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                public void run() {
+                    MobDisguise.pu.killCarcass(event.getPlayer());
                 }
             }, 5);
             
@@ -42,62 +47,53 @@ public class MDPlayerListener extends PlayerListener {
     }
     
     //Waiting for my stinking pull.
-    public void onPlayerAnimation(PlayerAnimationEvent event) {
-        if (MobDisguise.disList.contains(event.getPlayer().getName())) {
-            event.setCancelled(true);
-            return;
-        }
-    }
-
-    public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (MobDisguise.disList.contains(event.getPlayer().getName())) {
+    @Override
+    public void onPlayerAnimation(final PlayerAnimationEvent event) {
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
             event.setCancelled(true);
             return;
         }
     }
     
+    @Override
+    public void onPlayerBedEnter(final PlayerBedEnterEvent event) {
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
+            event.setCancelled(true);
+            return;
+        }
+    }
     
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if(MobDisguise.telelist.contains(event.getPlayer().getName())) {
+    @Override
+    public void onPlayerTeleport(final PlayerTeleportEvent event) {
+        if (MobDisguise.telelist.contains(event.getPlayer().getName())) {
             MobDisguise.telelist.remove(event.getPlayer().getName());
             return;
         }
-        if (!MobDisguise.disList.contains(event.getPlayer().getName())) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8);
-        }
-        if (MobDisguise.disList.contains(event.getPlayer().getName())) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8);
-            if(!MobDisguise.apiList.contains(event.getPlayer().getName())) {
-                event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you teleported");
-            }
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8);
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
+            event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you teleported");
         }
     }
     
-    
+    @Override
     public void onPlayerRespawn(final PlayerRespawnEvent event) {
-       
-        if (!MobDisguise.disList.contains(event.getPlayer().getName())) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8 );
-        }
-        if (MobDisguise.disList.contains(event.getPlayer().getName())) {
-            if(!MobDisguise.apiList.contains(event.getPlayer().getName())) {
-                event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you died");
-            }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8 );
+        
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 8);
+        
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
+            event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you died");
         }
     }
-
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        if (MobDisguise.disList.contains(event.getPlayer().getName())) {
+    
+    @Override
+    public void onPlayerJoin(final PlayerJoinEvent event) {
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 20);
+        if (MobDisguiseAPI.isDisguised(event.getPlayer())) {
             MobDisguise.telelist.add(event.getPlayer().getName());
-            MobDisguise.playerEntIds.add(Integer.valueOf(event.getPlayer().getEntityId()));
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 20);
-            if(!MobDisguise.apiList.contains(event.getPlayer().getName())) {
-                event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you relogged");
-            }
-        }
-        if(!MobDisguise.disList.contains(event.getPlayer().getName())) {
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DisguiseTask(plugin), 20 );
+            MobDisguiseAPI.getPlayerDisguise(event.getPlayer()).entID = event.getPlayer().getEntityId();
+            
+            event.getPlayer().sendMessage(MobDisguise.pref + "You have been disguised because you relogged");
+            
         }
         
     }

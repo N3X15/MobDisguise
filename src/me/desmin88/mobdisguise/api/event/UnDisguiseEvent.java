@@ -12,10 +12,10 @@ import org.bukkit.event.Event;
  */
 public class UnDisguiseEvent extends Event implements Cancellable {
     private static final long serialVersionUID = -5100103933008602505L;
-    private Player player;
+    private final Player player;
     private boolean canceled;
     
-    public UnDisguiseEvent(String event, Player player, boolean mob) {
+    public UnDisguiseEvent(final String event, final Player player, final boolean mob) {
         super(event);
         this.player = player;
     }
@@ -26,15 +26,15 @@ public class UnDisguiseEvent extends Event implements Cancellable {
      * @return Player
      */
     public Player getPlayer() {
-        return this.player;
+        return player;
     }
     
     public boolean isCancelled() {
-        return this.canceled;
+        return canceled;
     }
     
-    public void setCancelled(boolean cancel) {
-        this.canceled = cancel;
+    public void setCancelled(final boolean cancel) {
+        canceled = cancel;
     }
     
 }

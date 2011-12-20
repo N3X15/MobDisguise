@@ -12,9 +12,9 @@ import org.bukkit.inventory.ItemStack;
 public class RealDropsUtils {
     private static final Random r = new Random();
     
-    public static ItemStack getDrop(Player p) {
+    public static ItemStack getDrop(final Player p) {
         
-        DisguiseHandler dh = MobDisguiseAPI.getPlayerDisguise(p);
+        final DisguiseHandler dh = MobDisguiseAPI.getPlayerDisguise(p);
         switch (dh.getMobID()) {
             case 50: //Creeper
                 return new ItemStack(Material.SULPHUR, r.nextInt(2));
