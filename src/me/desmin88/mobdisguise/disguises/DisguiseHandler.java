@@ -3,7 +3,6 @@ package me.desmin88.mobdisguise.disguises;
 import java.lang.reflect.Field;
 
 import me.desmin88.mobdisguise.MobDisguise;
-import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet24MobSpawn;

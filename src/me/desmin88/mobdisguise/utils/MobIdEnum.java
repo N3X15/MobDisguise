@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import me.desmin88.mobdisguise.MobDisguise;
 import me.desmin88.mobdisguise.disguises.CreeperHandler;
 import me.desmin88.mobdisguise.disguises.DisguiseHandler;
+import me.desmin88.mobdisguise.disguises.GhastHandler;
 import me.desmin88.mobdisguise.disguises.PlayerHandler;
 
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public enum MobIdEnum {
     GIANT(53),
     ZOMBIE(54),
     SLIME(55),
-    GHAST(56),
+    GHAST(56, GhastHandler.class),
     PIGMAN(57),
     ENDERMAN(58),
     CAVESPIDER(59),
