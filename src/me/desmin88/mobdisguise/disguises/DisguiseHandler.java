@@ -3,6 +3,7 @@ package me.desmin88.mobdisguise.disguises;
 import java.lang.reflect.Field;
 
 import me.desmin88.mobdisguise.MobDisguise;
+import me.desmin88.mobdisguise.api.MobDisguiseAPI;
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet24MobSpawn;
@@ -100,6 +101,16 @@ public class DisguiseHandler {
     public void sendUpdate() {
         // Send DataWatcher updates
         final DataWatcher dw = getDataWatcher();
+        final Packet24MobSpawn p24 = createSpawnMobPacket();
+        for (final Player p2 : Bukkit.getServer().getOnlinePlayers()) {
+            if (!player.getWorld().equals(p2.getWorld())) {
+                continue;
+            }
+            if (p2 == player) {
+                continue;
+            }
+            ((CraftPlayer) p2).getHandle().netServerHandler.sendPacket(p24);
+        }
         if (dw.a()) {
             final Packet40EntityMetadata p40 = new Packet40EntityMetadata(player.getEntityId(), dw);
             for (final Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -150,7 +161,7 @@ public class DisguiseHandler {
     }
     
     public void refresh() {
-        // TODO Auto-generated method stub
+        this.datawatcher=new DataWatcher();
         datawatcher.a(0, Byte.valueOf((byte) 0));
         datawatcher.a(1, Short.valueOf((short) 300));
         datawatcher.a(12, new Integer(0));

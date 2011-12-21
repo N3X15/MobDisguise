@@ -19,7 +19,7 @@ public class DisguiseTask implements Runnable {
             if (p == null) {
                 continue;
             }
-            MobDisguiseAPI.getPlayerDisguise(p).refresh();
+            MobDisguiseAPI.getPlayerDisguise(p).sendUpdate();
             
         }
     }
