@@ -51,6 +51,9 @@ public enum MobIdEnum {
     
     public DisguiseHandler instantiate(final Player p, final MobDisguise plugin) {
         try {
+            if(handlerClass.equals(DisguiseHandler.class)) {
+                return handlerClass.getConstructor(Player.class, MobDisguise.class, Byte.class).newInstance(p, plugin, this.id);
+            }
             return handlerClass.getConstructor(Player.class, MobDisguise.class).newInstance(p, plugin);
         } catch (final IllegalArgumentException e) {
             // TODO Auto-generated catch block
