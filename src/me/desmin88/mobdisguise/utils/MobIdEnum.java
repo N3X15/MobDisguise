@@ -51,10 +51,11 @@ public enum MobIdEnum {
     
     public DisguiseHandler instantiate(final Player p, final MobDisguise plugin) {
         try {
-            if(handlerClass.equals(DisguiseHandler.class)) {
-                return handlerClass.getConstructor(Player.class, MobDisguise.class, Byte.class).newInstance(p, plugin, this.id);
+            if (handlerClass.equals(DisguiseHandler.class)) {
+                return handlerClass.getConstructor(Player.class, MobDisguise.class, byte.class).newInstance(p, plugin, this.id);
+            } else {
+                return handlerClass.getConstructor(Player.class, MobDisguise.class).newInstance(p, plugin);
             }
-            return handlerClass.getConstructor(Player.class, MobDisguise.class).newInstance(p, plugin);
         } catch (final IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
