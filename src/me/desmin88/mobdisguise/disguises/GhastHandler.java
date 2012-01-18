@@ -11,7 +11,7 @@ import org.bukkit.util.Vector;
 
 public class GhastHandler extends DisguiseHandler {
     
-    public GhastHandler(Player pl, MobDisguise p) {
+    public GhastHandler(final Player pl, final MobDisguise p) {
         super(pl, p, MobIdEnum.GHAST.id);
         Logger.getLogger("Minecraft").info(pl.getName() + " has been disguised as a ghast.");
     }
@@ -31,7 +31,7 @@ public class GhastHandler extends DisguiseHandler {
     }
     
     private void greatBallsOfFire() {
-        final Vector direction = this.player.getEyeLocation().getDirection().multiply(2);
+        final Vector direction = player.getEyeLocation().getDirection().multiply(2);
         player.getWorld().spawn(getPlayer().getEyeLocation().add(direction.getX(), direction.getY(), direction.getZ()), Fireball.class);
     }
 }

@@ -160,7 +160,7 @@ public class DisguiseHandler {
     }
     
     public void refresh() {
-        this.datawatcher=new DataWatcher();
+        datawatcher = new DataWatcher();
         datawatcher.a(0, Byte.valueOf((byte) 0));
         datawatcher.a(1, Short.valueOf((short) 300));
         datawatcher.a(12, new Integer(0));
