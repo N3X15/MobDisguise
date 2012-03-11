@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
  * 
  */
 public class DisguiseAsMobEvent extends DisguiseEvent {
-    private static final long serialVersionUID = 1706630423687514665L;
     private final String mobtype;
     
     public DisguiseAsMobEvent(final String event, final Player player, final String mobtype) {

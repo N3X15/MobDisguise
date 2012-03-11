@@ -55,7 +55,7 @@ public class RealDropsUtils {
                 
         }
         
-        return new ItemStack(null);
+        return new ItemStack(Material.AIR);
         
     }
 }

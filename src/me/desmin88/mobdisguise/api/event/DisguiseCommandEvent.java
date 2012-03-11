@@ -3,6 +3,7 @@ package me.desmin88.mobdisguise.api.event;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
  * Event data for when the MobDisguise command is used.
@@ -11,13 +12,12 @@ import org.bukkit.event.Event;
  * 
  */
 public class DisguiseCommandEvent extends Event implements Cancellable {
-    private static final long serialVersionUID = -1970653423890974618L;
     private final CommandSender sender;
     private final String[] args;
     private boolean canceled;
+    private final HandlerList handlers = new HandlerList();
     
     public DisguiseCommandEvent(final String event, final CommandSender sender, final String[] args) {
-        super(event);
         this.sender = sender;
         this.args = args;
     }
@@ -46,6 +46,11 @@ public class DisguiseCommandEvent extends Event implements Cancellable {
     
     public void setCancelled(final boolean cancel) {
         canceled = cancel;
+    }
+    
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
     
 }

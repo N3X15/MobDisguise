@@ -5,8 +5,9 @@ import me.desmin88.mobdisguise.api.event.DisguiseAsPlayerEvent;
 import me.desmin88.mobdisguise.api.event.DisguiseCommandEvent;
 import me.desmin88.mobdisguise.api.event.UnDisguiseEvent;
 
-import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 /**
@@ -15,7 +16,7 @@ import org.bukkit.event.Listener;
  * @author iffa
  * 
  */
-public class MobDisguiseListener extends CustomEventListener implements Listener {
+public class MobDisguiseListener implements Listener {
     /**
      * Called when a player disguises as a mob.
      * 
@@ -53,7 +54,7 @@ public class MobDisguiseListener extends CustomEventListener implements Listener
      * 
      * @param event Event data
      */
-    @Override
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onCustomEvent(final Event event) {
         if (event instanceof DisguiseAsMobEvent) {
             onDisguiseAsMob((DisguiseAsMobEvent) event);
